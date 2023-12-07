@@ -1,3 +1,5 @@
+const minRange = 1;
+const maxRange = 301;
 class CompactSerializer {
   constructor() {
     this.charStart = 65;
@@ -14,7 +16,6 @@ class CompactSerializer {
         } else {
           multiplier = Math.floor(num / this.maxCharacters);
           remainder = num % this.maxCharacters;
-
           return multiplier + String.fromCharCode(this.charStart + remainder);
         }
       })
@@ -27,7 +28,6 @@ class CompactSerializer {
     s.split("").forEach((char) => {
       if (!isNaN(char)) {
         multiplier += char;
-
         return;
       } else if (multiplier !== "") {
         answer.push(
@@ -43,22 +43,35 @@ class CompactSerializer {
     return answer;
   }
 }
+const randomizer = (loverLimit, upperLimit, repeatCount = 0) => {
+  const number = Math.floor(
+    Math.random() * (upperLimit - loverLimit) + loverLimit
+  );
+  if (repeatCount) {
+    const triplets = [];
+    for (let i = 0; i < repeatCount; i++) {
+      triplets.push(number);
+    }
+    return triplets;
+  }
+  return number;
+};
 
-// Example Usage:
 const serializer = new CompactSerializer();
 
-// Test cases
 const testCases = [
   [1, 2, 3, 4, 5], // Simplest short
-  [34, 12, 256, 89, 150], // Random - 5 numbers
-  Array.from({ length: 50 }, (_, i) => i + 1), // Random - 50 numbers
-  Array.from({ length: 100 }, (_, i) => i + 1), // Random - 100 numbers
-  Array.from({ length: 500 }, (_, i) => i + 1), // Random - 500 numbers
-  Array.from({ length: 1000 }, (_, i) => i + 1), // Random - 1000 numbers
+  Array.from({ length: 5 }, (_, i) => randomizer(minRange, maxRange)), // Random - 5 numbers
+  Array.from({ length: 50 }, (_, i) => randomizer(minRange, maxRange)), // Random - 50 numbers
+  Array.from({ length: 100 }, (_, i) => randomizer(minRange, maxRange)), // Random - 100 numbers
+  Array.from({ length: 500 }, (_, i) => randomizer(minRange, maxRange)), // Random - 500 numbers
+  Array.from({ length: 1000 }, (_, i) => randomizer(minRange, maxRange)), // Random - 1000 numbers
   Array.from({ length: 9 }, (_, i) => i + 1), // Boundary - All numbers of 1 digit
   Array.from({ length: 90 }, (_, i) => i + 10), // Boundary - All numbers of 2 digits
-  Array.from({ length: 200 }, (_, i) => i + 100), // Boundary - All numbers of 3 digits
-  Array.from({ length: 300 }, (_, i) => (i % 300) + 1).flat(), // 3 of each number - 900 numbers in total
+  Array.from({ length: 900 }, (_, i) => i + 100), // Boundary - All numbers of 3 digits
+  Array.from({ length: 900 }, (_, i) =>
+    randomizer(minRange, maxRange, 3)
+  ).flat(), // 3 of each number - 900 numbers in total
 ];
 
 testCases.forEach((originalSet) => {
@@ -72,9 +85,5 @@ testCases.forEach((originalSet) => {
   console.log("Original set:", originalSet);
   console.log("Serialized string:", compressedString);
   console.log("Deserialized set:", decompressedSet);
-  console.log(
-    `Compression Ratio: ${compressionRatio.toFixed(0)}%`,
-    compressedSize,
-    originalSize
-  );
+  console.log(`Compression Ratio: ${compressionRatio.toFixed(0)}%`);
 });
